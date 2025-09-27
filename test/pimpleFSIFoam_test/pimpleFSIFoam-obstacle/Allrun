@@ -25,7 +25,7 @@ cd ${domainStructure}
 mkdir build && cd build 
 
 # Check if an argument was provided
-cmake -DCMAKE_PREFIX_PATH=../../../../../../../../coupling/MUI ..
+cmake -DCMAKE_PREFIX_PATH=../../../../../../../../coupling_lib/MUI ..
 
 # Run make to build the executable
 make 2>&1 | tee make.log && cd ..
