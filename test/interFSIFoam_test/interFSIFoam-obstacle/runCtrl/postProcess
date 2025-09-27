@@ -1,0 +1,28 @@
+#!/bin/sh
+#set -x
+
+# Run from this directory
+cd ${0%/*} || exit 1
+
+# Source OpenFOAM run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Post-processing
+echo "Post-processing ... "
+cd ../runData/fluidDomain
+
+# Get application name
+application=$(getApplication)
+
+runApplication reconstructPar
+runApplication foamToEnsight
+runApplication foamToEnsightParts
+runApplication foamToVTK
+
+rm -rf processor*
+
+mv log.* ../logFiles
+
+echo "Done"
+
+# ----------------------------------------------------------------- end-of-file
