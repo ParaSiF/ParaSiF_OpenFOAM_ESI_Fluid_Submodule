@@ -1,0 +1,133 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+
+    p
+    {
+
+        solver                GAMG;
+        preconditioner        DIC;
+        tolerance             1E-06;
+        relTol                0.01;
+        smoother              GaussSeidel;
+        nSweeps               0;
+        cacheAgglomeration    false;
+        agglomerator          faceAreaPair;
+        nCellsInCoarsestLevel 10;
+        mergeLevels           1;
+        nPreSweeps            0;
+        nPostSweeps           2;
+        nFinestSweeps         2;
+        maxIter               1000;
+        minIter               3;
+        scaleCorrection       true;
+        directSolveCoarsest   false;
+    }
+
+    pFinal
+    {
+        $p;
+        tolerance             1e-09;
+        relTol                0;
+    }
+
+    "pcorr.*"
+    {
+        $p
+        tolerance       1e-06;
+        relTol          0.01;
+    }
+
+    cellDisplacement
+    {
+        $p
+        tolerance       1e-06;
+        relTol          0.01;
+    }
+
+    cellDisplacementFinal
+    {
+
+        $p
+        tolerance       1e-09;
+        relTol          0;
+    }
+
+    U
+    {
+        solver                smoothSolver;
+        smoother              GaussSeidel;
+        preconditioner        DILU;
+        tolerance             1E-06;
+        relTol                0.01;
+        maxIter               1000;
+        minIter               3;
+    }
+
+    UFinal
+    {
+        $U
+        tolerance       1e-09;
+        relTol          0;
+    }
+
+}
+
+PIMPLE
+{
+    nOuterCorrectors            10;
+    nCorrectors                 2;
+    nNonOrthogonalCorrectors    1;
+
+    correctPhi                  true;
+    moveMeshOuterCorrectors     true;
+    checkMeshCourantNo          true;
+
+    residualControl
+    {
+        U
+        {
+            tolerance   1e-5;
+            relTol      0.05;
+        }
+        p
+        {
+            tolerance   5e-4;
+            relTol      0.1;
+        }
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p                     1.0;
+        pFinal                1.0;
+        cellDisplacement      1.0;
+        cellDisplacementFinal 1.0;
+    }
+    equations
+    {
+        "U|k|epsilon"         0.5;
+        "(U|k|epsilon)Final"  1.0;
+    }
+}
+
+// ************************************************************************* //

@@ -1,0 +1,14 @@
+#!/bin/sh
+#set -x
+
+# Run from this directory
+cd ${0%/*} || exit 1
+
+# Create and copy data to run folder
+echo -n "Creating runData folder ..."
+mkdir ../runData
+cp -pr ../caseSetup/* ../runData
+mkdir ../runData/logFiles
+echo "Done"
+
+# ----------------------------------------------------------------- end-of-file

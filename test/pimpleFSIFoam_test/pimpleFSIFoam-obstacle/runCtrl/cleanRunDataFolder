@@ -1,0 +1,12 @@
+#!/bin/sh
+#set -x
+
+# Run from this directory
+cd ${0%/*} || exit 1
+
+# Clean case files
+echo -n "Cleaning runData folder ..."
+rm -rf ../runData > /dev/null 2>&1
+echo "Done"
+
+# ----------------------------------------------------------------- end-of-file
