@@ -57,6 +57,7 @@ Description
 *****************************************************************************/
 
 #include "mui.h"
+#include "mui_config.h"
 #include "fvCFD.H"
 #include "fvOptions.H"
 #include "simpleControl.H"
@@ -101,21 +102,21 @@ int main(int argc, char *argv[])
     }
 
     // Declare MUI objects using MUI configure file
-    auto ifs = mui::create_uniface<mui::config_3d>( domainName, interfaces );
+    auto ifs = mui::create_uniface<mui::mui_config>( domainName, interfaces );
 
     // setup parameters
     constexpr static int    Nx        = 41; // number of grid points in x axis
     constexpr static int    Ny        = 5; // number of grid points in y axis
     constexpr static int    Nz        = 5; // number of grid points in z axis
-    const char* name_fetchX = "forceX";
-    const char* name_fetchY = "forceY";
-    const char* name_fetchZ = "forceZ";
-    const char* name_pushX0 = "dispX0";
-    const char* name_pushY0 = "dispY0";
-    const char* name_pushZ0 = "dispZ0";
-    const char* name_pushX1 = "dispX1";
-    const char* name_pushY1 = "dispY1";
-    const char* name_pushZ1 = "dispZ1";
+    const char* name_fetchX = "dispX";
+    const char* name_fetchY = "dispY";
+    const char* name_fetchZ = "dispZ";
+    const char* name_pushX0 = "forceX0";
+    const char* name_pushY0 = "forceY0";
+    const char* name_pushZ0 = "forceZ0";
+    const char* name_pushX1 = "forceX1";
+    const char* name_pushY1 = "forceY1";
+    const char* name_pushZ1 = "forceZ1";
     double r    = 1.0;                      // search radius
     int Nt = Nx * Ny * Nz; // total time steps
     int steps = 1000; // total time steps
@@ -179,15 +180,15 @@ int main(int argc, char *argv[])
     }
 
    // annouce send span
-    mui::geometry::box<mui::config_3d> send_region( {local_x0, local_y0, local_z0}, {local_x1, local_y1, local_z1} );
-    mui::geometry::box<mui::config_3d> recv_region( {local_x2, local_y2, local_z2}, {local_x3, local_y3, local_z3} );
+    mui::geometry::box<mui::mui_config> send_region( {local_x0, local_y0, local_z0}, {local_x1, local_y1, local_z1} );
+    mui::geometry::box<mui::mui_config> recv_region( {local_x2, local_y2, local_z2}, {local_x3, local_y3, local_z3} );
     printf( "{OF0} send region for: %lf %lf %lf - %lf %lf %lf\n", local_x0, local_y0, local_z0, local_x1, local_y1, local_z1 );
     ifs[0]->announce_send_span( 0, steps*10, send_region );
     ifs[0]->announce_recv_span( 0, steps*10, recv_region );
 
     // define spatial and temporal samplers
-    mui::sampler_pseudo_n2_linear<mui::config_3d> s1(r);
-    mui::temporal_sampler_exact<mui::config_3d> s2;
+    mui::sampler_pseudo_n2_linear<mui::mui_config> s1(r);
+    mui::temporal_sampler_exact<mui::mui_config> s2;
 
     if (Pstream::myProcNo() == 0) {
         mui::point3d locp0( 13, 12, 11 );
@@ -223,15 +224,9 @@ int main(int argc, char *argv[])
            for ( int i = 0; i < Nx; ++i ) {
                for ( int j = 0; j < Ny; ++j ) {
                    for ( int k = 0; k < Nz; ++k ) {
-                       if (((n*timeStepSize)<=7.)&& (i==(Nx-1))){
-                           force_pushX[i][j][k] = 0.;
-                           force_pushY[i][j][k] = -((n*timeStepSize)*(20)/7.0);
-                           force_pushZ[i][j][k] = 0.;
-                       }else{
-                           force_pushX[i][j][k] = 0.;
-                           force_pushY[i][j][k] = 0.;
-                           force_pushZ[i][j][k] = 0.;
-                       }
+                       force_pushX[i][j][k] = 0.;
+                       force_pushY[i][j][k] = -((n*timeStepSize)*(10)/7.0);
+                       force_pushZ[i][j][k] = 0.;
 
                        if (std::abs(pp[i][j][k][0] - 20.0) <= 0.00001 ){
                            mui::point3d locp( pp[i][j][k][0], pp[i][j][k][1], pp[i][j][k][2] );
@@ -244,7 +239,7 @@ int main(int argc, char *argv[])
                                 ifs[0]->push( name_pushY1, locp, force_pushY[i][j][k] );
                                 ifs[0]->push( name_pushZ1, locp, force_pushZ[i][j][k] );
                             }
-                            std::cout << "!!{OF0} push point: " <<  locp[0] << ", " <<  locp[1] << ", "<<  locp[2] << std::endl;
+                            std::cout << "{OF0} push point: " <<  locp[0] << ", " <<  locp[1] << ", "<<  locp[2] << " with value " << force_pushY[i][j][k] << std::endl;
                             total_force_Y += force_pushY[i][j][k];
                        }
                    }
