@@ -1,0 +1,81 @@
+ /*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fsiDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+domainFSIName           fluidDomain;
+
+interfaceLists
+( 
+    threeDInterface0
+    {
+        PatchNames
+        (
+            interface
+        );
+    }
+);
+
+subIterationNumber        5;
+forgetFSITimeSteps      5;
+
+changeFSISubIter        no;
+changeFSISubIterTime    15.0;
+newFSISubIterationNum    5;
+
+pushFSIForce            yes;
+sendFSINameX            forceX;
+sendFSINameY            forceY;
+sendFSINameZ            forceZ;
+
+applyFSIFetchX          yes;
+applyFSIFetchY          yes;
+applyFSIFetchZ          yes;
+
+fetchFSINameX           dispX;
+fetchFSINameY           dispY;
+fetchFSINameZ           dispZ;
+
+searchAreaSampler       1.0;
+
+// FixedRelaxation; Aitken; IQN_ILS; Loose;
+cplFSIMethod            Loose;
+initFSIUndRelxCpl       0.6;
+
+//- Maximum value of the under relaxation number (valid only for IQN-ILS)
+maxFSIUndRelxCpl        1.0;
+//- Number of Aitken iterations to at the beginning of each IQN-ILS time-steps (valid only for IQN-ILS)
+numFSIAitkenIterations  5;
+
+pushFSIDelay            0;
+
+twoDimFSICorrection     no;
+twoDimFSICellHeight     0.015;
+
+rigidMotionFrqX     0.0;
+rigidMotionFrqY     0.0;
+rigidMotionFrqZ     0.0;
+
+rigidMotionAmplitudeX     0.0;
+rigidMotionAmplitudeY     0.0;
+rigidMotionAmplitudeZ     0.0;
+
+rotation2DFrq             0.61;
+rotation2DAmplitude     0.0;
+rotation2DOriginX     0.0;
+rotation2DOriginY     0.0;
+rotation2DOriginZ     0.0;
+
+// ************************************************************************* //

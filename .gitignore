@@ -1,0 +1,13 @@
+**/linux64GccDPInt64Opt/
+**/lnInclude/
+**/runData/
+**/.vscode/
+PUSHER_FETCHER_1
+**/build/
+forceCpp.txt
+**/flange/0/
+**/polyMesh/
+log.*
+**/processor*/
+*.log
+

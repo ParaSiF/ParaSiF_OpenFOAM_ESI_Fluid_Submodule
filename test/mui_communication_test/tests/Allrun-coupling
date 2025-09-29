@@ -1,0 +1,51 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# Pre-processing in OpenFOAM run folder
+
+domainOpenFOAM=${PWD}/flange
+
+cd ${domainOpenFOAM}
+
+solverOpenFOAM=$(getApplication)
+
+restore0Dir
+
+runApplication ansysToFoam \
+    ${FOAM_TUTORIALS:?}/resources/geometry/flange.ans -scale 0.001
+
+runApplication decomposePar
+
+cd ..
+
+# Done -> Pre-processing in OpenFOAM run folder
+
+# Pre-processing in dummy app run folder
+
+domainDummyApp=${PWD}/dummyApp
+
+solverDummyApp=./PUSHER_FETCHER_1
+
+cd ${domainDummyApp}
+
+# Create build folder
+mkdir build && cd build 
+
+# Check if an argument was provided
+cmake -DCMAKE_PREFIX_PATH=$(pwd)/../../../../../../../../coupling_lib/MUI ..
+
+# Run make to build the executable
+make 2>&1 | tee make.log && cd ..
+cp build/PUSHER_FETCHER_1 ./
+cd ..
+
+# Done -> Pre-processing in dummy app run folder
+
+# Run coupled code
+mpirun -np 2 -wdir ${domainOpenFOAM} ${solverOpenFOAM} -mpi-split-by-appnum -parallel : -np 1 -wdir ${domainDummyApp} ${solverDummyApp} 2>&1 | tee ${solverOpenFOAM}.log
+
+# Done -> Run coupled code
+
+#------------------------------------------------------------------------------

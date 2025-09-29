@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Source OpenFOAM run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Clean runData Folder
+./runCtrl/cleanRunDataFolder
+
+rm std.err > /dev/null 2>&1
+rm std.out > /dev/null 2>&1
+
+# ----------------------------------------------------------------- end-of-file

@@ -1,0 +1,22 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/CleanFunctions      # Tutorial clean functions
+#------------------------------------------------------------------------------
+
+rm -f *.log
+
+cd flange
+cleanCase0
+rm -f *.log
+cd ..
+
+cd dummyApp
+rm -f *.log
+rm dispCpp.txt
+rm PUSHER_FETCHER_1
+cd build make clean
+cd ..
+rm -fr build
+cd ..
+
+#------------------------------------------------------------------------------
