@@ -7,15 +7,15 @@ It is maintained as a **submodule** of the main ParaSiF repository: [ParaSiF Mai
 
 ## Overview
 
-The OpenFOAM (ESI) Fluid Solver in ParaSiF allows the simulation of fluid domains in **multi-physics partitioned simulations**.
+The OpenFOAM (ESI) Fluid Solver in ParaSiF allows the simulation of *fluid domains* in **multi-physics partitioned simulations**.
 It is designed to interface with other solvers (e.g., structural solvers) via the **[MUI coupling library](https://mxui.github.io/)**.
 
 Key features:
 
 - Two-way partitioned coupling with structural solvers.
 - Supports parallel execution on HPC systems.
-- Compatible with precompiled or user-installed OpenFOAM versions.
 - Modular design: can be replaced or updated without affecting other solvers.
+- Compatible with precompiled or user-installed OpenFOAM versions.
 
 ---
 
@@ -101,6 +101,7 @@ For integrated example cases with other solvers, see the example/ folder in the 
 ## Contributing
 
 ParaSiF, including this submodule, is an **open-source project**, and contributions from the community are warmly welcomed.
+
 There are many ways you can help improve this submodule, including:
 
 - Adding new features, libs or solvers
