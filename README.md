@@ -51,7 +51,7 @@ ParaSiF/src/fluid/OpenFOAM_ESI/
 ```
 ## Installation
 
-**Note:** This solver is a submodule of ParaSiF. Follow the main ParaSiF repository instructions to initialise submodules.
+**Note:** This solver is a submodule of ParaSiF. Follow the main ParaSiF repository instructions to initialise submodules and install global dependencies.
 
 ### Steps
 
