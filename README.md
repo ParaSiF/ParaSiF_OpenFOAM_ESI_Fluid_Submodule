@@ -41,8 +41,8 @@ ParaSiF/src/fluid/OpenFOAM_ESI/
 ├── src/                     # ParaSiF-specific source code folder
 │ ├── applications/          # ParaSiF-specific applications
 │ │ └── solvers/             # ParaSiF-specific solvers
-│ │ ├── pimpleFSIFoam        # source code of pimpleFSIFoam solver
-│ │ └── interFSIFoam         # source code of interFSIFoam solver
+│ │  ├── pimpleFSIFoam       # source code of pimpleFSIFoam solver
+│ │  └── interFSIFoam        # source code of interFSIFoam solver
 │ └── libs/                  # Libs used by solvers
 └── test/                    # test folder
  ├── mui_communication_test  # Tests for MUI communication under OpenFOAM codebase
