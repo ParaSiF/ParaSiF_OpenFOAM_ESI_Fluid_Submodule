@@ -110,7 +110,7 @@ There are many ways you can help improve this submodule, including:
 
 Your contributions, whether large or small, are highly valued and help make ParaSiF a stronger resource for the research community.
 
-For detailed guidance on contributing, please see the [CONTRIBUTING.md](https://github.com/ParaSiF/ParaSiF/CONTRIBUTING.md) in the main ParaSiF repository.
+For detailed guidance on contributing, please see the [CONTRIBUTING.md](https://github.com/ParaSiF/ParaSiF/blob/main/CONTRIBUTING.md) in the main ParaSiF repository.
 
 ## License
 
