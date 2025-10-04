@@ -38,7 +38,7 @@ divSchemes
     default                                 none;
     div(phi,U)                              Gauss linearUpwind 
                                                 cellLimited 
-                                                leastSquares 1; 
+                                                leastSquares 1;
     div((nuEff*dev2(T(grad(U)))))           Gauss linear;
     div(rhoPhi,U)  Gauss linearUpwind grad(U);
     div(phi,alpha)  Gauss vanLeer;
