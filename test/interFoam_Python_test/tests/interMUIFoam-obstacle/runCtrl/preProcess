@@ -1,0 +1,20 @@
+#!/bin/sh
+#set -x
+
+# Run from this directory
+cd ${0%/*} || exit 1
+
+# Source OpenFOAM run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Pre-process for fluid domain
+echo "Pre-processing ..."
+cd ../runData/fluidDomain
+runApplication blockMesh
+runApplication setFields
+runApplication checkMesh
+runApplication decomposePar
+mv log.* ../logFiles
+echo "Done"
+
+# ----------------------------------------------------------------- end-of-file

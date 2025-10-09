@@ -1,0 +1,15 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# Compile solver
+cd applications/
+wmake interMUIFoam
+cd ..
+
+# Run test case
+cd tests/
+./Allrun-coupling
+
+#------------------------------------------------------------------------------
