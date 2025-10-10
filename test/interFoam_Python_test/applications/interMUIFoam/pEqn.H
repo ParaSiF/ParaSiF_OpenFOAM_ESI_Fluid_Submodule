@@ -42,12 +42,23 @@
     {
 
     // * * * * * * * * * * * MUI Initialise * * * * * * * * * * * * * * * * * //
+
+        Info << "{OpenFOAM} non-orthogonal iteration: " << pimple.corrNonOrtho() << " with nNonOrthCorr " << pimple.nNonOrthCorr() << nl;
+
         #include "clockTime.H"
 
         // Start timer
         Foam::clockTime loopTimer;
 
-        const Foam::volScalarField& pField = p_rgh;         // your field
+        scalar pressureDoubleFetch = 0.0;
+        scalar pressureSend = 0.0;
+
+        label totalIter = (runTime.timeIndex() - 1) * pimple.nCorrPIMPLE() * pimple.nCorrPISO() * (pimple.nNonOrthCorr()+1)
+            + (pimple.corr() - 1) * pimple.nCorrPISO() * (pimple.nNonOrthCorr()+1)
+            + (pimple.corrPISO() - 1) * (pimple.nNonOrthCorr()+1)
+            + pimple.corrNonOrtho();
+
+        const Foam::volScalarField& pField = p_rgh;
 
         forAll(pField, cellI)
         {
@@ -56,24 +67,33 @@
 
             mui::point3d locp( coord.x(), coord.y(), coord.z() );
 
-            //ifs[0]->push( namePush, locp, pVal );
+            ifs[0]->push( "prgh", locp, pVal );
 
-/*             Pout << "{OpenFOAM} Sending - Cell: " << cellI
-                 << "                     Coord: " << coord
-                 << "                     p_rgh: " << pVal << nl; */
+            pressureSend = pVal;
+        }
 
+        Pout << "{OpenFOAM} Sending - p_rgh: " << pressureSend << nl;
+
+        // commit step
+        ifs[0]->commit(totalIter);
+
+        Info << "{OpenFOAM} commit at " << totalIter << nl;
+
+        forAll(pField, cellI)
+        {
+            const vector& coord = centres[cellI];
             mui::point3d locf( coord.x(), coord.y(), coord.z() );
 
-            //scalar pressureDoubleFetch = ifs[0]->fetch( nameFetch, locf, runTime.timeIndex(), s1, s2 );
+            pressureDoubleFetch = ifs[0]->fetch( nameFetch, locf, totalIter, s1, s2 );
 
-/*             Pout << "{OpenFOAM} Receiving - Cell: " << cellI
-                << "                        Coord: " << coord
-                << "                        p_rgh Double: " << pressureDoubleFetch << nl; */
         }
+
+        Pout << "{OpenFOAM} Receiving - p_rgh Double: " << pressureDoubleFetch << nl;
 
         // Print elapsed time
         Info << "{OpenFOAM} Two-way Data passing in: " 
             << loopTimer.elapsedTime() << " s" << nl;
+
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
         fvScalarMatrix p_rghEqn

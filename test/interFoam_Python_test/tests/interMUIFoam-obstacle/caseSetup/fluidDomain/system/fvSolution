@@ -134,9 +134,9 @@ solvers
 
 PIMPLE
 {
-    nOuterCorrectors          2;
-    nCorrectors               2;
-    nNonOrthogonalCorrectors  1;
+    nOuterCorrectors          3;
+    nCorrectors               4;
+    nNonOrthogonalCorrectors  5;
     pRefCell                  0;
     pRefValue                 0;
 
@@ -166,8 +166,6 @@ relaxationFactors
     {
         p                     1.0;
         pFinal                1.0;
-        cellDisplacement      1.0;
-        cellDisplacementFinal 1.0;
     }
     equations
     {

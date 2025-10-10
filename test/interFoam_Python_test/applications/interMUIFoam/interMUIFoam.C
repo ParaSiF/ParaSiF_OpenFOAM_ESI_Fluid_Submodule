@@ -139,9 +139,23 @@ int main(int argc, char *argv[])
 
     const vectorField& centres = mesh.C();
 
+    label nProcs = Pstream::nProcs();
+
+    ifs[0]->push( "nProcs", nProcs );
+
+    word namePushSize = "cellSize_" + name(Pstream::myProcNo());
+
+    ifs[0]->push( namePushSize, centres.size() );
+
+    Pout << "{OpenFOAM} rank " << Pstream::myProcNo() << " has " << centres.size() << " cells." << nl;
+
     // Initialise min and max vectors
     vector minCoord(VGREAT, VGREAT, VGREAT);
     vector maxCoord(-VGREAT, -VGREAT, -VGREAT);
+
+    word namePushCoordX = "cellX_" + name(Pstream::myProcNo());
+    word namePushCoordY = "cellY_" + name(Pstream::myProcNo());
+    word namePushCoordZ = "cellZ_" + name(Pstream::myProcNo());
 
     forAll(centres, cellI)
     {
@@ -155,27 +169,13 @@ int main(int argc, char *argv[])
         maxCoord.x() = Foam::max(maxCoord.x(), c.x());
         maxCoord.y() = Foam::max(maxCoord.y(), c.y());
         maxCoord.z() = Foam::max(maxCoord.z(), c.z());
+
+        mui::point3d locp( cellI, 0.0, 0.0 );
+        Pout << "{OpenFOAM} Pushing - Cell: " << cellI << nl;
+        ifs[0]->push( namePushCoordX, locp, c.x() );
+        ifs[0]->push( namePushCoordY, locp, c.y() );
+        ifs[0]->push( namePushCoordZ, locp, c.z() );
     }
-
-    label nProcs = Pstream::nProcs();
-
-    ifs[0]->push( "nProcs", nProcs );
-
-    word namePushSize = "cellSize_" + name(Pstream::myProcNo());
-
-    ifs[0]->push( namePushSize, centres.size() );
-
-    Pout << "{OpenFOAM} rank " << Pstream::myProcNo() << " has " << centres.size() << " cells." << nl;
-/* 
-    // Get the communicator OpenFOAM is using
-    MPI_Comm comm = Pstream::mpiCommunicator();
-
-    int rank, size;
-    MPI_Comm_rank(comm, &rank);
-    MPI_Comm_size(comm, &size);
-
-    Info << "Rank " << rank << " of " << size 
-         << " using OpenFOAM communicator." << nl; */
 
    // annouce send span
     mui::geometry::box<mui::mui_config> send_region( {minCoord.x(), minCoord.y(), minCoord.z()}, {maxCoord.x(), maxCoord.y(), maxCoord.z()} );
@@ -185,11 +185,10 @@ int main(int argc, char *argv[])
     ifs[0]->announce_recv_span( 0, label((runTime.endTime().value() - runTime.startTime().value())/runTime.deltaT().value() + 0.5), recv_region );
 
     // define spatial and temporal samplers
-    scalar r    = 1.0;  // search radius
-    mui::sampler_pseudo_n2_linear<mui::mui_config> s1(r);
+    mui::sampler_exact<mui::mui_config> s1;
     mui::temporal_sampler_exact<mui::mui_config> s2;
 
-    // commit ZERO step
+    // commit zero step
     ifs[0]->commit(0);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -217,6 +216,8 @@ int main(int argc, char *argv[])
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
+            Info << "{OpenFOAM} PIMPLE iteration: outer=" << pimple.corr() << " with nCorrPIMPLE() " << pimple.nCorrPIMPLE()  << nl;
+
             if (pimple.firstIter() || moveMeshOuterCorrectors)
             {
                 mesh.update();
@@ -271,6 +272,7 @@ int main(int argc, char *argv[])
             // --- Pressure corrector loop
             while (pimple.correct())
             {
+                Info << "{OpenFOAM} corrector iteration: " << pimple.corrPISO() << " nCorrPISO() " << pimple.nCorrPISO()  << nl;
                 #include "pEqn.H"
             }
 
