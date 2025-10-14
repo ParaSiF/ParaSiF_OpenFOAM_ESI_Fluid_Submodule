@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Run from this directory
+cd ${0%/*} || exit 1
+
+domainFluid=${PWD}/runData/fluidDomain
+domainMachineLearning=${PWD}/runData/pythonScript
+
+# Ranks set to each domain
+numProcsFluid=3
+numProcsMachineLearning=1
+
+# Source OpenFOAM run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Create and copy data to run folder
+./runCtrl/runDataFolderCreation
+
+# Get application name for Machine Learning domain
+solverMachineLearning=dummyPython.py
+
+# Get application name for fluid domain
+cd runData/fluidDomain
+solverFluid=$(getApplication)
+echo application is ${solverFluid}
+cd ../../
+
+# Pre-processing
+./runCtrl/preProcess
+
+echo -n "ParaSiF running..."
+
+# ParaSiF case with OpenFOAM_MUI(C++)_MUI(python)_FEniCSx parallel run
+mpirun -np ${numProcsFluid} -wdir ${domainFluid} ${solverFluid} -mpi-split-by-appnum -parallel :\
+       -np ${numProcsMachineLearning} -wdir ${domainMachineLearning} python3 -m mpi4py ${solverMachineLearning} \
+       2>&1 | tee runData/logFiles/log.foamRun
+
+echo "Done"
+
+# Post-processing
+./runCtrl/postProcess
+
+# ----------------------------------------------------------------- end-of-file

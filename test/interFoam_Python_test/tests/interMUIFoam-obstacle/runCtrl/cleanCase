@@ -1,0 +1,18 @@
+#!/bin/sh
+#set -x
+
+# Run from this directory
+cd ${0%/*} || exit 1
+
+# Source OpenFOAM run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Clean case files
+echo -n "Cleaning cases ..."
+cd ../runData/fluidDomain
+cleanCase
+rm -rf EnSight Ensight Fieldview > /dev/null 2>&1
+rm -f constant/polyMesh/boundary > /dev/null 2>&1
+echo "Done"
+
+# ----------------------------------------------------------------- end-of-file

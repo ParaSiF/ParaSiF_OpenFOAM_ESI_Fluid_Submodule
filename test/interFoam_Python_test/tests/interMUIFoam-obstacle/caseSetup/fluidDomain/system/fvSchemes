@@ -1,0 +1,83 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2506                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default                                 Euler;
+}
+
+d2dt2Schemes
+{
+    default                                 Euler;
+}
+
+gradSchemes
+{
+    default                                 Gauss linear;
+    grad(p)                                 Gauss linear;
+    grad(U)                                 cellLimited 
+                                                Gauss linear 1;
+}
+
+divSchemes
+{
+    default                                 none;
+    div(phi,U)                              Gauss linearUpwind 
+                                                cellLimited 
+                                                leastSquares 1;
+    div((nuEff*dev2(T(grad(U)))))           Gauss linear;
+    div(rhoPhi,U)  Gauss linearUpwind grad(U);
+    div(phi,alpha)  Gauss vanLeer;
+    div(phirb,alpha) Gauss linear;
+    div(((rho*nuEff)*dev2(T(grad(U))))) Gauss linear;
+}
+
+laplacianSchemes
+{
+    default                                 Gauss linear corrected;
+    laplacian(nu,U)                         Gauss linear 
+                                                corrected;
+    laplacian((1|A(U)),p)                   Gauss linear 
+                                                corrected;
+    laplacian(diffusivity,cellDisplacement)  Gauss linear 
+                                                corrected;
+    laplacian(rAUf,pcorr)                   Gauss linear 
+                                                corrected;
+    laplacian(nuEff,U)                      Gauss linear 
+                                                corrected;
+}
+
+interpolationSchemes
+{
+    default                                 linear;
+    interpolate(U)                          linear;
+}
+
+snGradSchemes
+{
+    default                                 limited 
+                                            corrected 0.5;
+}
+
+fluxRequired
+{
+    default                                 no;
+    pcorr                                     ;
+    p                                         ;
+}
+
+// ************************************************************************* //
